@@ -8,6 +8,7 @@ app/api/deps.py
 app/api/v1/__init__.py
 app/api/v1/auth.py
 app/api/v1/habits.py
+app/api/v1/pools.py
 app/core/__init__.py
 app/core/config.py
 app/core/security.py
@@ -17,11 +18,15 @@ app/db/session.py
 app/models/__init__.py
 app/models/checkin.py
 app/models/habit.py
+app/models/pool.py
+app/models/pool_checkin.py
+app/models/pool_participant.py
 app/models/user.py
 app/schemas/__init__.py
 app/schemas/auth.py
 app/schemas/checkin.py
 app/schemas/habit.py
+app/schemas/pool.py
 app/schemas/streak.py
 app/schemas/token.py
 app/schemas/user.py
@@ -29,6 +34,7 @@ app/services/__init__.py
 app/services/auth_service.py
 app/services/checkin_service.py
 app/services/habit_service.py
+app/services/pool_service.py
 app/services/streak_service.py
 app/services/user_service.py
 stakehabit_api.egg-info/PKG-INFO
@@ -39,4 +45,5 @@ stakehabit_api.egg-info/top_level.txt
 tests/test_auth.py
 tests/test_checkin.py
 tests/test_habits.py
+tests/test_pools.py
 tests/test_streak.py
