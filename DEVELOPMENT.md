@@ -1,129 +1,114 @@
 # Development Guide
 
-## Environment Setup
+This guide covers the day-to-day workflow for working on the StakeHabit API locally.
 
-### Prerequisites
+## Prerequisites
+
 - Python 3.11+
-- PostgreSQL (via Supabase or local)
+- PostgreSQL (local install or Supabase)
 - Git
+- A terminal with access to your virtual environment
 
-### Installation
+## Setup
 
 1. Clone the repository:
-   ```bash
-   cd /home/devmaro/stakehabit-api
-   ```
 
-2. Create virtual environment:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # Linux/macOS
-   # or
-   .venv\Scripts\activate      # Windows
-   ```
+```bash
+cd /home/devmaro/stakehabit-api
+```
 
-3. Install dependencies:
-   ```bash
-   pip install -e .[dev]
-   ```
+2. Create and activate a virtual environment:
 
-4. Configure `.env`:
-   ```env
-   DATABASE_URL=postgresql://user:password@host:port/database
-   JWT_SECRET_KEY=your-secure-random-key-min-32-chars
-   ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-## Running the Application
+3. Install app dependencies:
 
-### Development Server
+```bash
+pip install -e ".[dev]"
+```
+
+4. Create a local `.env` file:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/stakehabit"
+JWT_SECRET_KEY="replace-with-a-long-random-secret"
+JWT_ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES="60"
+```
+
+## Run the API
+
+### Development server
+
 ```bash
 .venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The server will automatically reload on file changes.
+The app is available at:
+- `http://localhost:8000`
+- `http://localhost:8000/docs` for the Swagger UI
+- `http://localhost:8000/redoc` for ReDoc
 
-### Production Server (Manual)
+### Production-style start
+
 ```bash
 .venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-## Database Management
+## Database workflow
 
-### Create Migrations
+### Create a new migration
+
 ```bash
 alembic revision --autogenerate -m "Description of changes"
 ```
 
-### Apply Migrations
+### Apply migrations
+
 ```bash
-alembic upgrade head      # All pending migrations
-alembic upgrade +1        # Next migration only
+alembic upgrade head
 ```
 
-### Rollback Migrations
+### Roll back one revision
+
 ```bash
-alembic downgrade -1      # Rollback one migration
-alembic downgrade base    # Rollback all migrations
+alembic downgrade -1
 ```
 
-### Check Migration Status
+### Inspect migration history
+
 ```bash
-alembic current           # Current schema version
-alembic history           # All migrations history
+alembic current
+alembic history
 ```
 
 ## Testing
 
-### Run All Tests
+### Run the full suite
+
 ```bash
-.venv/bin/python -m pytest tests/ -v
+.venv/bin/python -m pytest tests/ -q
 ```
 
-### Run Specific Test File
+### Run a single file
+
 ```bash
-.venv/bin/python -m pytest tests/test_auth.py -v
+.venv/bin/python -m pytest tests/test_pools.py -q
 ```
 
-### Run Specific Test
+### Run a single test
+
 ```bash
-.venv/bin/python -m pytest tests/test_auth.py::test_register_and_login -v
+.venv/bin/python -m pytest tests/test_pools.py::test_pool_flow -q
 ```
 
-### Run with Coverage
-```bash
-.venv/bin/python -m pytest tests/ --cov=app --cov-report=html
-```
+## Example API requests
 
-### Run Tests with Output
-```bash
-.venv/bin/python -m pytest tests/ -v -s
-```
+### Register a user
 
-## Code Quality
-
-### Type Checking (Optional - requires mypy)
-```bash
-pip install mypy
-mypy app/
-```
-
-### Format Code (Optional - requires black)
-```bash
-pip install black
-black app/ tests/
-```
-
-### Lint Code (Optional - requires ruff)
-```bash
-pip install ruff
-ruff check app/ tests/
-```
-
-## API Testing
-
-### Using cURL
-
-#### Register
 ```bash
 curl -X POST http://localhost:8000/register \
   -H "Content-Type: application/json" \
@@ -133,7 +118,8 @@ curl -X POST http://localhost:8000/register \
   }'
 ```
 
-#### Login
+### Log in
+
 ```bash
 curl -X POST http://localhost:8000/login \
   -H "Content-Type: application/json" \
@@ -143,13 +129,8 @@ curl -X POST http://localhost:8000/login \
   }'
 ```
 
-#### Get Profile
-```bash
-curl -X GET http://localhost:8000/me \
-  -H "Authorization: Bearer <token>"
-```
+### Create a habit
 
-#### Create Habit
 ```bash
 curl -X POST http://localhost:8000/habits \
   -H "Authorization: Bearer <token>" \
@@ -162,102 +143,61 @@ curl -X POST http://localhost:8000/habits \
   }'
 ```
 
-#### List Habits
-```bash
-curl -X GET http://localhost:8000/habits \
-  -H "Authorization: Bearer <token>"
-```
+### Create a pool
 
-#### Add Check-in
 ```bash
-curl -X POST http://localhost:8000/habits/1/checkins \
+curl -X POST http://localhost:8000/pools \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
-    "date": "2024-07-07"
+    "title": "Streak Pool",
+    "description": "Daily goals with shared stakes",
+    "duration": 14,
+    "stake_amount": "10.0000000",
+    "currency": "USD",
+    "max_participants": 5,
+    "winner_split": 80,
+    "charity": "help",
+    "creator_address": "GABCDEF1234567890"
   }'
 ```
 
-#### Get Streak
-```bash
-curl -X GET http://localhost:8000/habits/1/streak \
-  -H "Authorization: Bearer <token>"
-```
+## Project structure
 
-### Using HTTPie
-```bash
-# Register
-http POST localhost:8000/register email=user@example.com password=securepass123
-
-# Login
-http POST localhost:8000/login email=user@example.com password=securepass123
-
-# Get Profile
-http GET localhost:8000/me Authorization:"Bearer <token>"
-```
-
-### Using Postman
-1. Import the API endpoints
-2. Set base URL: `http://localhost:8000`
-3. Add token to Authorization header after login
-4. Test endpoints in order
-
-## Project Structure Explained
-
-```
+```text
 app/
-├── main.py              # FastAPI app creation and routes registration
-├── api/                 # API routes
-│   ├── deps.py          # Shared dependencies (get_current_user, get_db)
-│   └── v1/              # API version 1
-│       ├── auth.py      # Authentication endpoints
-│       └── habits.py    # Habit endpoints
-├── models/              # SQLAlchemy ORM models
-│   ├── user.py
+├── api/
+│   └── v1/
+│       ├── auth.py
+│       ├── habits.py
+│       └── pools.py
+├── core/
+│   ├── config.py
+│   └── security.py
+├── db/
+│   ├── base.py
+│   └── session.py
+├── models/
 │   ├── habit.py
+│   ├── pool.py
+│   ├── pool_checkin.py
+│   ├── pool_participant.py
+│   ├── user.py
 │   └── checkin.py
-├── schemas/             # Pydantic validation schemas
-│   ├── user.py
-│   ├── auth.py
-│   ├── habit.py
-│   ├── checkin.py
-│   ├── streak.py
-│   └── token.py
-├── services/            # Business logic (isolated from API)
-│   ├── auth_service.py
-│   ├── user_service.py
-│   ├── habit_service.py
-│   ├── checkin_service.py
-│   └── streak_service.py
-├── db/                  # Database configuration
-│   ├── base.py          # SQLAlchemy declarative base
-│   └── session.py       # Database engine and session management
-└── core/                # Core configurations
-    ├── config.py        # Settings from environment
-    └── security.py      # JWT and password utilities
+├── schemas/
+├── services/
+└── main.py
 
 tests/
-├── conftest.py          # Pytest fixtures
-├── test_auth.py         # Auth tests
-├── test_habits.py       # Habit CRUD tests
-├── test_checkin.py      # Check-in tests
-└── test_streak.py       # Streak calculation tests
-
 alembic/
-├── env.py               # Alembic environment setup
-├── script.py.mako       # Migration template
-└── versions/
-    └── 0001_initial.py  # Initial schema migration
-
-.env                     # Environment variables (git ignored)
-.gitignore              # Git ignore patterns
-pyproject.toml          # Project metadata and dependencies
-alembic.ini             # Alembic configuration
-README.md               # Quick start guide
-PROJECT_SUMMARY.md      # Detailed feature summary
 ```
 
-## Common Tasks
+## Notes for collaborators
+
+- Keep route handlers thin and move business logic into service modules.
+- Prefer updating schemas and tests when adding or changing API behavior.
+- Use the shared docs in [README.md](README.md), [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md), and [FRONTEND_INTEGRATION_GUIDE.md](FRONTEND_INTEGRATION_GUIDE.md) as the source of truth for integration expectations.
+
 
 ### Add a New Endpoint
 
