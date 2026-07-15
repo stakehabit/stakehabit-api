@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.auth import router as auth_router
 from app.api.v1.habits import router as habit_router
 from app.api.v1.pools import router as pool_router
-from app.core.config import settings
 
 
 def create_app() -> FastAPI:

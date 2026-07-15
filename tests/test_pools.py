@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date
 
 
 def test_pool_flow(client):

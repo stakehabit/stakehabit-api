@@ -21,7 +21,8 @@ def create_checkin(db: Session, habit: Habit, checkin_create: CheckinCreate) -> 
         db.commit()
     except IntegrityError as error:
         db.rollback()
-        if "uq_habit_date" in str(error.orig):
+        error_text = str(error.orig).lower()
+        if "uq_habit_date" in error_text or "checkins.habit_id, checkins.date" in error_text:
             raise DuplicateCheckinError("A check-in already exists for this habit on that date.") from error
         raise
     db.refresh(checkin)

@@ -24,7 +24,9 @@ def list_habits(current_user=Depends(get_current_user), db: Session = Depends(ge
 
 
 @router.post("/habits", response_model=HabitRead, status_code=status.HTTP_201_CREATED)
-def create_new_habit(habit_create: HabitCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)) -> HabitRead:
+def create_new_habit(
+    habit_create: HabitCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)
+) -> HabitRead:
     return create_habit(db, user_id=current_user.id, habit_create=habit_create)
 
 
@@ -37,7 +39,9 @@ def get_habit(habit_id: int, current_user=Depends(get_current_user), db: Session
 
 
 @router.patch("/habits/{habit_id}", response_model=HabitRead)
-def patch_habit(habit_id: int, habit_update: HabitUpdate, current_user=Depends(get_current_user), db: Session = Depends(get_db)) -> HabitRead:
+def patch_habit(
+    habit_id: int, habit_update: HabitUpdate, current_user=Depends(get_current_user), db: Session = Depends(get_db)
+) -> HabitRead:
     habit = get_habit_by_id(db, habit_id=habit_id, user_id=current_user.id)
     if habit is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found")
@@ -53,7 +57,9 @@ def remove_habit(habit_id: int, current_user=Depends(get_current_user), db: Sess
 
 
 @router.post("/habits/{habit_id}/checkins", response_model=CheckinRead, status_code=status.HTTP_201_CREATED)
-def add_checkin(habit_id: int, checkin_create: CheckinCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)) -> CheckinRead:
+def add_checkin(
+    habit_id: int, checkin_create: CheckinCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)
+) -> CheckinRead:
     habit = get_habit_by_id(db, habit_id=habit_id, user_id=current_user.id)
     if habit is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found")

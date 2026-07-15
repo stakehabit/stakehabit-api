@@ -31,7 +31,9 @@ def list_pools(db: Session = Depends(get_db)) -> list[PoolRead]:
 
 
 @router.post("/pools", response_model=PoolRead, status_code=status.HTTP_201_CREATED)
-def create_new_pool(pool_create: PoolCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)) -> PoolRead:
+def create_new_pool(
+    pool_create: PoolCreate, current_user=Depends(get_current_user), db: Session = Depends(get_db)
+) -> PoolRead:
     pool = create_pool(db, pool_create=pool_create, creator_id=current_user.id)
     return pool
 
@@ -45,7 +47,9 @@ def get_pool(pool_id: int, db: Session = Depends(get_db)) -> PoolRead:
 
 
 @router.post("/pools/{pool_id}/join", response_model=PoolParticipantRead)
-def join_pool_endpoint(pool_id: int, participant: PoolParticipantBase, db: Session = Depends(get_db)) -> PoolParticipantRead:
+def join_pool_endpoint(
+    pool_id: int, participant: PoolParticipantBase, db: Session = Depends(get_db)
+) -> PoolParticipantRead:
     pool = get_pool_by_id(db, pool_id=pool_id)
     if pool is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pool not found")
