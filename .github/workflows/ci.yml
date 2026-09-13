@@ -149,19 +149,20 @@ jobs:
 
       - name: Run bandit and fail on medium+ issues
         run: |
-          python - <<'PY'
-from pathlib import Path
-import json, sys, subprocess
-subprocess.run(["bandit", "-r", "app", "-f", "json", "-o", "bandit.json"], check=False)
-data = json.load(open('bandit.json')) if Path('bandit.json').exists() else {'results': []}
-issues = [i for i in data.get('results', []) if i.get('issue_severity') in ('MEDIUM', 'HIGH', 'CRITICAL')]
-if issues:
-    print('Bandit medium+ issues found:')
-    for i in issues:
-        print(i.get('filename'), i.get('line_number'), i.get('issue_text'))
-    sys.exit(1)
-print('No bandit medium+ issues')
-PY
+          set -euo pipefail
+          # Run bandit and write JSON output (don't fail on bandit exit code so we can parse results)
+          bandit -r app -f json -o bandit.json || true
+          # Fail if JSON contains MEDIUM/HIGH/CRITICAL issue_severity
+          if grep -En '"issue_severity"\s*:\s*"(MEDIUM|HIGH|CRITICAL)"' bandit.json >/dev/null 2>&1; then
+            echo "Bandit medium+ issues found:"
+            # Print matching lines for inspection
+            grep -En '"issue_severity"\s*:\s*"(MEDIUM|HIGH|CRITICAL)"' bandit.json || true
+            # Also show nearby filename/issue_text lines for context
+            grep -En '"filename"|"issue_text"' bandit.json || true || true
+            exit 1
+          else
+            echo "No bandit medium+ issues"
+          fi
 
   type-check:
     runs-on: ubuntu-latest
