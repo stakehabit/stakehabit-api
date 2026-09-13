@@ -109,7 +109,8 @@ jobs:
           set -euo pipefail
           # Try to autogenerate a revision and fail if it contains operations
           alembic revision --autogenerate -m "ci_check" || true
-          LATEST=$(ls -t alembic/versions 2>/dev/null | head -n1 || true)
+          # pick the latest generated Python revision file only (ignore __pycache__ dirs)
+          LATEST=$(ls -t alembic/versions/*.py 2>/dev/null | head -n1 || true)
           if [ -n "$LATEST" ]; then
             if grep -q "op\." "alembic/versions/$LATEST"; then
               echo "Migration drift detected: generated file has operations"
@@ -145,7 +146,26 @@ jobs:
       - name: Run pip-audit (fail on HIGH)
         run: |
           python -m pip install pip-audit --upgrade
-          pip-audit --fail-on HIGH
+          # Run pip-audit with JSON output and fail if any HIGH/CRITICAL findings are present
+          pip-audit -f json -o pip_audit.json || true
+          python - <<'PY'
+    import json, sys, os
+    path = 'pip_audit.json'
+    if not os.path.exists(path):
+      print('pip-audit did not produce JSON output')
+      sys.exit(1)
+    data = json.load(open(path))
+    found = False
+    for pkg in data:
+      for v in pkg.get('vulns', []):
+        sev = (v.get('severity') or '').upper()
+        if sev in ('HIGH', 'CRITICAL'):
+          print('HIGH/CRITICAL vuln:', pkg.get('name'), v.get('id'), sev)
+          found = True
+    if found:
+      sys.exit(1)
+    print('No HIGH/CRITICAL pip-audit findings')
+    PY
 
       - name: Run bandit and fail on medium+ issues
         run: |
