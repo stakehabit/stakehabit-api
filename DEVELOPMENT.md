@@ -374,3 +374,18 @@ python -m py_compile app/      # Check syntax
 6. Plan stake integration feature
 7. Plan charity integration feature
 8. Implement notification system
+
+## CI & Automated Review
+
+This repository includes several automated checks and an automated reviewer (CodeRabbit):
+
+- **`backend-checks`**: runs linting (`ruff`), formatting checks (`black --check`), test suite with coverage (`pytest --cov=app --cov-report=term-missing --cov-report=xml`), and applies migrations (`alembic upgrade head`). Coverage is uploaded as `coverage.xml` in the CI artifacts.
+- **`migration-drift-check`**: applies migrations and then attempts an autogenerate to detect model/migration drift. The job fails if autogeneration produces an actionable migration.
+- **`security-scan`**: runs `pip-audit` (fails on HIGH/CRITICAL findings) and `bandit` (fails on MEDIUM+ findings).
+- **`type-check`**: runs `mypy` in non-blocking mode (reported but does not block merges).
+
+CodeRabbit (`.coderabbit.yaml`) is enabled to auto-review PRs with a `chill` profile and will comment on potential issues. Re-trigger reviews by mentioning `@coderabbitai review` in PR comments. CodeRabbit comments are advisory (do not block merges by default).
+
+Notes:
+- Mypy and coverage are informational for now; they will be enforced later after establishing baselines.
+- If you see a CI failure in `migration-drift-check`, run `alembic revision --autogenerate -m "fix: migrate"` locally to inspect the suggested changes and either add a migration or resolve the model mismatch.
