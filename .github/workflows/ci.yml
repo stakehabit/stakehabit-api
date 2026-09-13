@@ -149,23 +149,23 @@ jobs:
           # Run pip-audit with JSON output and fail if any HIGH/CRITICAL findings are present
           pip-audit -f json -o pip_audit.json || true
           python - <<'PY'
-    import json, sys, os
-    path = 'pip_audit.json'
-    if not os.path.exists(path):
-      print('pip-audit did not produce JSON output')
-      sys.exit(1)
-    data = json.load(open(path))
-    found = False
-    for pkg in data:
-      for v in pkg.get('vulns', []):
-        sev = (v.get('severity') or '').upper()
-        if sev in ('HIGH', 'CRITICAL'):
-          print('HIGH/CRITICAL vuln:', pkg.get('name'), v.get('id'), sev)
-          found = True
-    if found:
-      sys.exit(1)
-    print('No HIGH/CRITICAL pip-audit findings')
-    PY
+          import json, sys, os
+          path = 'pip_audit.json'
+          if not os.path.exists(path):
+              print('pip-audit did not produce JSON output')
+              sys.exit(1)
+          data = json.load(open(path))
+          found = False
+          for pkg in data:
+              for v in pkg.get('vulns', []):
+                  sev = (v.get('severity') or '').upper()
+                  if sev in ('HIGH', 'CRITICAL'):
+                      print('HIGH/CRITICAL vuln:', pkg.get('name'), v.get('id'), sev)
+                      found = True
+          if found:
+              sys.exit(1)
+          print('No HIGH/CRITICAL pip-audit findings')
+          PY
 
       - name: Run bandit and fail on medium+ issues
         run: |
