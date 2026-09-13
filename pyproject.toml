@@ -29,7 +29,10 @@ dev = [
     "pytest-asyncio>=0.22",
     "ruff>=0.6",
     "black>=24.8",
-    "mypy>=1.11"
+    "mypy>=1.11",
+    "bandit>=1.8",
+    "pip-audit>=2.2",
+    "pytest-cov>=4.1"
 ]
 
 [tool.setuptools.packages.find]
@@ -43,3 +46,8 @@ line-length = 120
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = true
