@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+reviews:
+  profile: chill
+  auto_review:
+    enabled: true
+    on: [pull_request]
+  request_changes_workflow: false
+  path_instructions:
+    - path: "app/services/**"
+      checks:
+        - missing-input-validation
+        - n_plus_one_queries
+        - missing_tests_for_business_logic
+    - path: "alembic/versions/**"
+      checks:
+        - manual-edit-of-applied-migration
+    - path: "app/api/v1/**"
+      checks:
+        - missing_pydantic_schema
+        - missing_frontend_docs_update
+    - path: "tests/**"
+      checks:
+        - missing_error_path_assertions
+chat:
+  auto_reply: true
+tone_instructions: ""
