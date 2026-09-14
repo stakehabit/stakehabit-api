@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, timedelta
-from typing import Optional
+from datetime import UTC, date, datetime, timedelta
 
 from app.models.checkin import Checkin
 
@@ -13,13 +12,13 @@ class StreakResult:
         self.total_completed_checkins = total_completed_checkins
 
 
-def calculate_streaks(checkins: list[Checkin], today: Optional[date] = None) -> StreakResult:
+def calculate_streaks(checkins: list[Checkin], today: date | None = None) -> StreakResult:
     dates = sorted({checkin.date for checkin in checkins})
-    today = today or date.today()
+    today = today or datetime.now(UTC).date()
     current_streak = 0
     longest_streak = 0
     streak = 0
-    previous_date: Optional[date] = None
+    previous_date: date | None = None
 
     for checkin_date in dates:
         if previous_date is None or checkin_date != previous_date + timedelta(days=1):

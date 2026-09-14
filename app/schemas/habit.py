@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -16,10 +15,10 @@ class HabitCreate(HabitBase):
 
 
 class HabitUpdate(BaseModel):
-    title: Optional[str] = None
-    frequency: Optional[str] = None
-    target_days_per_week: Optional[int] = None
-    is_active: Optional[bool] = None
+    title: str | None = None
+    frequency: str | None = None
+    target_days_per_week: int | None = None
+    is_active: bool | None = None
 
 
 class HabitRead(HabitBase):

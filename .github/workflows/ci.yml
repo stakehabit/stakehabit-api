@@ -111,8 +111,9 @@ jobs:
           alembic revision --autogenerate -m "ci_check" || true
           # pick the latest generated Python revision file only (ignore __pycache__ dirs)
           LATEST=$(ls -t alembic/versions/*.py 2>/dev/null | head -n1 || true)
+          # `LATEST` already includes the full `alembic/versions/<file>` path
           if [ -n "$LATEST" ]; then
-            if grep -q "op\." "alembic/versions/$LATEST"; then
+            if grep -q "op\." "$LATEST"; then
               echo "Migration drift detected: generated file has operations"
               sed -n '1,200p' "alembic/versions/$LATEST"
               rm "alembic/versions/$LATEST"
@@ -146,25 +147,40 @@ jobs:
       - name: Run pip-audit (fail on HIGH)
         run: |
           python -m pip install pip-audit --upgrade
-          # Run pip-audit with JSON output and fail if any HIGH/CRITICAL findings are present
+          # Run pip-audit with JSON output. The `|| true` keeps the step running when a
+          # vulnerability is found so we can evaluate the findings below.
           pip-audit -f json -o pip_audit.json || true
           python - <<'PY'
-          import json, sys, os
-          path = 'pip_audit.json'
+          import json
+          import os
+          import sys
+
+          path = "pip_audit.json"
           if not os.path.exists(path):
-              print('pip-audit did not produce JSON output')
+              print("pip-audit did not produce JSON output")
               sys.exit(1)
+
           data = json.load(open(path))
+          # Newer pip-audit versions emit a top-level object under "dependencies"
+          # instead of a bare top-level list (see -f json).
+          if isinstance(data, dict):
+              dependencies = data.get("dependencies", [])
+          else:
+              dependencies = data
+
           found = False
-          for pkg in data:
-              for v in pkg.get('vulns', []):
-                  sev = (v.get('severity') or '').upper()
-                  if sev in ('HIGH', 'CRITICAL'):
-                      print('HIGH/CRITICAL vuln:', pkg.get('name'), v.get('id'), sev)
-                      found = True
+          for pkg in dependencies:
+              # Robust against older schema versions that wrap each dependency
+              # as {"name": ..., "version": ..., "vulns": [...]}.
+              if not isinstance(pkg, dict):
+                  continue
+              for v in pkg.get("vulns", []):
+                  print("Vulnerable package:", pkg.get("name"), "->", v)
+                  found = True
+
           if found:
               sys.exit(1)
-          print('No HIGH/CRITICAL pip-audit findings')
+          print("No pip-audit findings")
           PY
 
       - name: Run bandit and fail on medium+ issues

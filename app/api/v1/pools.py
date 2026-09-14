@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user, get_db
 from app.schemas.pool import (
     PoolCheckinCreate,
+    PoolCheckinRead,
     PoolCreate,
     PoolParticipantBase,
     PoolParticipantRead,
     PoolRead,
-    PoolCheckinRead,
 )
 from app.services.pool_service import (
     PoolCheckinError,

@@ -1,11 +1,12 @@
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.pool import Pool
 from app.models.pool_checkin import PoolCheckin
 from app.models.pool_participant import PoolParticipant
-from app.schemas.pool import PoolCreate, PoolParticipantBase, PoolCheckinCreate
+from app.schemas.pool import PoolCheckinCreate, PoolCreate, PoolParticipantBase
 
 
 class PoolJoinError(ValueError):
@@ -110,7 +111,7 @@ def submit_checkin(db: Session, pool: Pool, checkin_data: PoolCheckinCreate) -> 
     if participant is None:
         raise PoolCheckinError("Participant not found in pool.")
 
-    check_in_date = checkin_data.check_in_date or date.today()
+    check_in_date = checkin_data.check_in_date or datetime.now(UTC).date()
     checkin = PoolCheckin(
         pool_id=pool.id,
         participant_id=participant.id,

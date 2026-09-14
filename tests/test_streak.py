@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import UTC, datetime, timedelta
 
 
 def test_streak_calculation(client):
@@ -17,7 +17,7 @@ def test_streak_calculation(client):
     habit_response = client.post("/habits", json=habit_payload, headers=headers)
     habit_id = habit_response.json()["id"]
 
-    today = date.today()
+    today = datetime.now(UTC).date()
     yesterday = today - timedelta(days=1)
     two_days_ago = today - timedelta(days=2)
     client.post(f"/habits/{habit_id}/checkins", json={"date": two_days_ago.isoformat()}, headers=headers)

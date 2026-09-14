@@ -23,16 +23,19 @@ dependencies = [
     "python-multipart>=0.0.6"
 ]
 [project.optional-dependencies]
+# Pinned to the exact green build. The gate-keeping linters (ruff's default rule
+# set, pip-audit's JSON schema, bandit severity levels) evolve between releases,
+# so floating versions (`>=`) made CI flaky whenever a new build shipped.
 dev = [
-    "pytest>=8.4",
-    "httpx>=0.26",
-    "pytest-asyncio>=0.22",
-    "ruff>=0.6",
-    "black>=24.8",
-    "mypy>=1.11",
-    "bandit>=1.8",
-    "pip-audit>=2.2",
-    "pytest-cov>=4.1"
+    "pytest==9.1.1",
+    "httpx==0.28.1",
+    "pytest-asyncio==1.4.0",
+    "ruff==0.16.7",
+    "black==26.5.1",
+    "mypy==2.3.0",
+    "bandit==1.9.4",
+    "pip-audit==2.10.1",
+    "pytest-cov==7.1.0"
 ]
 
 [tool.setuptools.packages.find]
@@ -42,6 +45,9 @@ include = ["app*"]
 [tool.black]
 target-version = ["py312"]
 line-length = 120
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

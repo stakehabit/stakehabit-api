@@ -5,7 +5,11 @@ from app.api.deps import get_current_user, get_db
 from app.schemas.checkin import CheckinCreate, CheckinRead
 from app.schemas.habit import HabitCreate, HabitRead, HabitUpdate
 from app.schemas.streak import StreakRead
-from app.services.checkin_service import DuplicateCheckinError, create_checkin, get_checkins_by_habit
+from app.services.checkin_service import (
+    DuplicateCheckinError,
+    create_checkin,
+    get_checkins_by_habit,
+)
 from app.services.habit_service import (
     create_habit,
     delete_habit,

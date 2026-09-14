@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import UTC, datetime
 
 
 def test_pool_flow(client):
@@ -36,7 +36,7 @@ def test_pool_flow(client):
     assert duplicate_response.status_code == 400
     assert "already joined" in duplicate_response.json()["detail"].lower()
 
-    checkin_payload = {"wallet_address": "GUSER0000000001", "check_in_date": date.today().isoformat()}
+    checkin_payload = {"wallet_address": "GUSER0000000001", "check_in_date": datetime.now(UTC).date().isoformat()}
     checkin_response = client.post(f"/pools/{pool['id']}/checkin", json=checkin_payload)
     assert checkin_response.status_code == 201
 
@@ -76,13 +76,13 @@ def test_checkin_duplicate_same_day(client):
     client.post(f"/pools/{pool['id']}/join", json={"wallet_address": wallet_address})
     first_checkin = client.post(
         f"/pools/{pool['id']}/checkin",
-        json={"wallet_address": wallet_address, "check_in_date": date.today().isoformat()},
+        json={"wallet_address": wallet_address, "check_in_date": datetime.now(UTC).date().isoformat()},
     )
     assert first_checkin.status_code == 201
 
     duplicate = client.post(
         f"/pools/{pool['id']}/checkin",
-        json={"wallet_address": wallet_address, "check_in_date": date.today().isoformat()},
+        json={"wallet_address": wallet_address, "check_in_date": datetime.now(UTC).date().isoformat()},
     )
     assert duplicate.status_code == 400
     assert "already exists" in duplicate.json()["detail"].lower()

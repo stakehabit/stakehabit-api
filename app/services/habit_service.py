@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.models.habit import Habit
@@ -11,7 +10,7 @@ def get_habits_for_user(db: Session, user_id: int) -> list[Habit]:
     return db.query(Habit).filter(Habit.user_id == user_id).all()
 
 
-def get_habit_by_id(db: Session, habit_id: int, user_id: int) -> Optional[Habit]:
+def get_habit_by_id(db: Session, habit_id: int, user_id: int) -> Habit | None:
     return db.query(Habit).filter(Habit.id == habit_id, Habit.user_id == user_id).first()
 
 

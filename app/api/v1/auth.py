@@ -5,7 +5,11 @@ from app.api.deps import get_current_user, get_db
 from app.schemas.auth import LoginRequest
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserRead
-from app.services.auth_service import authenticate_user, create_user_token, register_user
+from app.services.auth_service import (
+    authenticate_user,
+    create_user_token,
+    register_user,
+)
 from app.services.user_service import get_user_by_email
 
 router = APIRouter()

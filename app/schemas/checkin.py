@@ -1,11 +1,11 @@
-from datetime import date as date_type, datetime
-from typing import Optional
+from datetime import date as date_type
+from datetime import datetime
 
 from pydantic import BaseModel
 
 
 class CheckinCreate(BaseModel):
-    date: Optional[date_type] = None
+    date: date_type | None = None
 
 
 class CheckinRead(BaseModel):

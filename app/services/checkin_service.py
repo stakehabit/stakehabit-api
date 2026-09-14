@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import UTC, datetime
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -14,7 +15,7 @@ class DuplicateCheckinError(ValueError):
 
 
 def create_checkin(db: Session, habit: Habit, checkin_create: CheckinCreate) -> Checkin:
-    checkin_date = checkin_create.date or date.today()
+    checkin_date = checkin_create.date or datetime.now(UTC).date()
     checkin = Checkin(habit_id=habit.id, date=checkin_date)
     db.add(checkin)
     try:

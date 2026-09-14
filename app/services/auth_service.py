@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Optional
+
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, get_password_hash, verify_password
@@ -17,7 +17,7 @@ def register_user(db: Session, user_create: UserCreate) -> User:
     return user
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
+def authenticate_user(db: Session, email: str, password: str) -> User | None:
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return None

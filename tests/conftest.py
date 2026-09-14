@@ -1,4 +1,4 @@
-from typing import Generator
+from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -7,14 +7,8 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.db.base import Base
-from app.main import app as fastapi_app
 from app.db.session import get_db
-
-import app.models.user
-import app.models.habit
-import app.models.checkin
-import app.models.pool  # noqa: F401
-import app.models.pool_participant  # noqa: F401
+from app.main import app as fastapi_app
 
 SQLALCHEMY_DATABASE_URL = "sqlite+pysqlite:///:memory:"
 engine = create_engine(

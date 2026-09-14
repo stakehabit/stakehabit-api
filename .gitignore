@@ -20,6 +20,11 @@ htmlcov/
 .pytest_cache/
 .mypy_cache/
 
+# Security-scan artifacts (written by the CI pip-audit / bandit steps)
+pip_audit.json
+pip-audit.json
+bandit.json
+
 # Editor / OS
 .vscode/
 .DS_Store

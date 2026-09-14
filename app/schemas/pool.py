@@ -1,20 +1,19 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
 
 class PoolBase(BaseModel):
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     duration: int
     stake_amount: Decimal
     currency: str
     max_participants: int
     winner_split: int = Field(..., ge=0, le=100)
-    charity: Optional[str] = None
-    contract_address: Optional[str] = None
+    charity: str | None = None
+    contract_address: str | None = None
     creator_address: str
 
 
@@ -24,7 +23,7 @@ class PoolCreate(PoolBase):
 
 class PoolParticipantBase(BaseModel):
     wallet_address: str
-    signature: Optional[str] = None
+    signature: str | None = None
 
 
 class PoolParticipantRead(BaseModel):
@@ -42,8 +41,8 @@ class PoolParticipantRead(BaseModel):
 
 class PoolCheckinCreate(BaseModel):
     wallet_address: str
-    check_in_date: Optional[date] = None
-    tx_hash: Optional[str] = None
+    check_in_date: date | None = None
+    tx_hash: str | None = None
 
 
 class PoolCheckinRead(BaseModel):
@@ -51,7 +50,7 @@ class PoolCheckinRead(BaseModel):
     participant_id: int
     pool_id: int
     check_in_date: date
-    tx_hash: Optional[str]
+    tx_hash: str | None
     created_at: datetime
 
     model_config = {
@@ -63,7 +62,7 @@ class PoolRead(PoolBase):
     id: int
     status: str
     created_at: datetime
-    participants: List[PoolParticipantRead] = []
+    participants: list[PoolParticipantRead] = []
 
     model_config = {
         "from_attributes": True,
