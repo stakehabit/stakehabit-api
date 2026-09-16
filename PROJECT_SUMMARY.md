@@ -64,6 +64,8 @@ The project follows a simple layered structure:
 - Database migrations are managed through Alembic.
 - Tests are implemented with pytest and use a lightweight database fixture for local validation.
 
+CI notes: The repository CI enforces code quality and security checks on pushes and pull requests. Jobs include lint/format checks, tests with coverage upload, migration-drift detection, `pip-audit` and Bandit security scans, and a non-blocking `mypy` run. Keep API contract and migration changes accompanied by tests and updated docs.
+
 ## Suggested next steps
 
 - Add richer pool outcomes and winner selection logic

@@ -44,3 +44,14 @@ A good pull request should include:
 - any API contract changes
 - relevant test evidence
 - any documentation updates needed for frontend or agent integration
+
+## CI and automated checks
+
+All PRs to `main` run the repository CI which includes:
+- Linting and formatting checks (`ruff`, `black --check`)
+- Tests with coverage reporting (CI produces `coverage.xml`)
+- Alembic migration drift detection (ensure `alembic revision --autogenerate` creates no unexpected ops)
+- Dependency security scan (`pip-audit`) and static security scan (`bandit`)
+- `mypy` run in CI (non-blocking currently; use locally for type confidence)
+
+Please run these checks locally where appropriate and update documentation/tests when making contract or database changes. CodeRabbit is enabled to provide automated PR comments—request a re-review by mentioning `@coderabbitai review` in a PR comment.

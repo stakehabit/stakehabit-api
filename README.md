@@ -77,13 +77,17 @@ Protected endpoints expect an `Authorization: Bearer <token>` header.
 
 ## Documentation
 
-- [DEVELOPMENT.md](DEVELOPMENT.md) for local setup and contributor workflows
+- [DEVELOPMENT.md](DEVELOPMENT.md) for local setup and contributor workflows (includes CI & automated review information)
 - [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for a feature overview and architecture summary
 - [contributions.md](contributions.md) for contribution rules and PR expectations
 - [FRONTEND_INTEGRATION_GUIDE.md](FRONTEND_INTEGRATION_GUIDE.md) for frontend and agent handoff details
 
+Note: CI runs several automated checks on `push` and `pull_request` to `main` such as linting (`ruff`), formatting (`black --check`), tests with coverage (uploads `coverage.xml`), migration drift detection, dependency scanning (`pip-audit`), Bandit security scanning, and a non-blocking `mypy` type check. CodeRabbit is also configured to comment on PRs with review guidance.
+
 ## Testing
 
+Run the test suite with coverage (CI also uploads `coverage.xml`):
+
 ```bash
-.venv/bin/python -m pytest tests/ -q
+.venv/bin/python -m pytest tests/ -q --cov=app --cov-report=term-missing --cov-report=xml
 ```

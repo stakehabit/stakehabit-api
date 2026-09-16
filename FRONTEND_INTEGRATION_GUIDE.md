@@ -130,3 +130,6 @@ The backend currently allows cross-origin requests from any origin for local dev
 - [ ] Use the pool endpoints for creating and joining challenge pools.
 - [ ] Handle `401` and `400` responses with clear user feedback.
 - [ ] Keep the frontend in sync with the documented API contract when new fields are added.
+ - [ ] Be aware CI runs automated checks (lint/format/tests/coverage, migration-drift, pip-audit, Bandit). If a PR modifies request/response shapes, update docs and run tests locally before opening the PR.
+
+Developer note: CodeRabbit may auto-comment on PRs for missing validation, tests, or API contract mismatches; trigger a re-review by mentioning `@coderabbitai review` in the PR comments.
